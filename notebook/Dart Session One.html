@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dart Session – Reference Notebook</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Kalam:wght@300;400;700&family=Tajawal:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#c8c8c8; font-family:'Kalam',cursive; padding:20px; direction:rtl; }
+
+.page {
+  background:#fefef2; width:794px; margin:0 auto 40px auto;
+  padding:40px 45px 40px 70px; position:relative;
+  box-shadow:3px 3px 15px rgba(0,0,0,0.3); border-radius:3px; overflow:hidden;
+}
+.page::before {
+  content:''; position:absolute; top:0; left:0; right:0; bottom:0;
+  background-image:repeating-linear-gradient(transparent,transparent 31px,#b8d4f0 31px,#b8d4f0 32px);
+  pointer-events:none; z-index:0;
+}
+.page::after {
+  content:''; position:absolute; top:0; bottom:0; right:85px;
+  width:2px; background:#e88; z-index:1;
+}
+.content { position:relative; z-index:2; }
+.hole { position:absolute; left:25px; width:18px; height:18px; background:#c8c8c8; border-radius:50%; box-shadow:inset 0 1px 3px rgba(0,0,0,0.4); z-index:10; }
+.doodle { position:absolute; font-size:20px; opacity:0.2; z-index:1; }
+
+/* ── Typography ── */
+h1.page-title { font-family:'Caveat',cursive; font-size:24px; font-weight:700; color:#cc0000; text-align:center; margin-bottom:4px; text-decoration:underline; }
+h2.section-title { font-family:'Caveat',cursive; font-size:18px; font-weight:700; color:#cc0000; margin:14px 0 6px 0; border-bottom:2px solid #cc0000; padding-bottom:2px; display:inline-block; }
+h3.sub-title { font-family:'Kalam',cursive; font-size:14px; font-weight:700; color:#1a3a8f; margin:10px 0 4px 0; }
+p, li { font-family:'Kalam',cursive; font-size:12px; color:#1a3a8f; line-height:22px; margin-bottom:2px; }
+ul { list-style:none; padding-right:8px; }
+ul li::before { content:"• "; color:#1a3a8f; font-weight:bold; }
+.highlight { background:#fff176; padding:0 4px; border-radius:2px; font-weight:600; }
+.red-text { color:#cc0000; font-weight:700; }
+.green-text { color:#228822; font-weight:700; }
+.divider { border:none; border-top:1.5px dashed #aaa; margin:14px 0; }
+.page-num { text-align:center; font-family:'Caveat',cursive; font-size:14px; color:#888; margin-top:14px; }
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; direction:rtl; }
+
+/* ── Boxes ── */
+.tip-box { background:#fff9e6; border:2px solid #f5a623; border-radius:6px; padding:6px 10px; margin:8px 0; position:relative; transform:rotate(-0.5deg); }
+.tip-box::before { content:attr(data-label); position:absolute; top:-11px; right:8px; background:#f5a623; color:white; font-family:'Caveat',cursive; font-size:12px; font-weight:700; padding:1px 6px; border-radius:4px; }
+.tip-box p, .tip-box li { color:#7a4a00; font-size:12px; line-height:20px; }
+
+.hafez-box { background:#f3e6ff; border:2px solid #7c3aed; border-radius:8px; padding:10px 12px 8px; margin:10px 0; position:relative; transform:rotate(0.4deg); box-shadow:1px 2px 5px rgba(124,58,237,0.15); }
+.hafez-box::before { content:"🧠 احفظ!"; position:absolute; top:-12px; right:10px; background:#7c3aed; color:white; font-family:'Caveat',cursive; font-size:13px; font-weight:700; padding:1px 8px; border-radius:5px; }
+.hafez-box p, .hafez-box li { color:#3b0764; font-size:12px; line-height:20px; }
+.hafez-box strong { color:#7c3aed; }
+.hafez-box .hline { border-top:1.5px dashed #c4b5fd; margin:5px 0; }
+
+.error-box { background:#fff0f0; border:2px dashed #cc0000; border-radius:6px; padding:6px 10px; margin:8px 0; position:relative; transform:rotate(0.3deg); }
+.error-box::before { content:attr(data-label); position:absolute; top:-11px; right:8px; background:#cc0000; color:white; font-family:'Caveat',cursive; font-size:12px; font-weight:700; padding:1px 6px; border-radius:4px; }
+.error-box p, .error-box li { color:#8b0000; font-size:12px; line-height:20px; }
+
+.exam-q { background:#f0fff0; border:1.5px solid #228822; border-radius:6px; padding:8px 12px; margin:10px 0; position:relative; }
+.exam-q::before { content:"📝 سؤال"; position:absolute; top:-12px; right:10px; background:#228822; color:white; font-family:'Caveat',cursive; font-size:12px; font-weight:700; padding:1px 7px; border-radius:4px; }
+.exam-q p { color:#005500; font-size:12px; line-height:20px; }
+
+.ans-box { background:#e8f5e9; border:2px solid #228822; border-radius:6px; padding:8px 12px; margin:8px 0; position:relative; transform:rotate(-0.2deg); }
+.ans-box::before { content:"✅ الإجابة"; position:absolute; top:-12px; right:10px; background:#228822; color:white; font-family:'Caveat',cursive; font-size:12px; font-weight:700; padding:1px 7px; border-radius:4px; }
+.ans-box p, .ans-box li { color:#1b5e20; font-size:12px; line-height:20px; }
+.ans-box strong { color:#145a32; }
+
+/* ── Diagram + Flow ── */
+.diagram { background:white; border:1.5px solid #888; border-radius:5px; padding:10px; margin:10px auto; text-align:center; transform:rotate(-0.3deg); box-shadow:1px 1px 4px rgba(0,0,0,0.1); }
+.diagram-title { font-family:'Caveat',cursive; font-size:14px; color:#cc0000; font-weight:700; margin-bottom:6px; text-decoration:underline; }
+
+.flow { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:6px; margin:8px 0; direction:ltr; }
+.flow-box { background:#e8f4ff; border:1.5px solid #1a3a8f; border-radius:5px; padding:4px 8px; font-family:'Caveat',cursive; font-size:11px; color:#1a3a8f; font-weight:700; white-space:nowrap; }
+.flow-box.red    { background:#ffe8e8; border-color:#cc0000; color:#cc0000; }
+.flow-box.green  { background:#e8ffe8; border-color:#228822; color:#228822; }
+.flow-box.orange { background:#fff4e0; border-color:#e07000; color:#e07000; }
+.flow-box.purple { background:#f3e6ff; border-color:#7c3aed; color:#7c3aed; }
+.arrow { font-size:14px; color:#555; font-weight:bold; }
+
+/* ── Tables ── */
+table { border-collapse:collapse; width:100%; margin:6px 0; direction:rtl; }
+th { background:#cc0000; color:white; font-family:'Caveat',cursive; font-size:12px; padding:4px 7px; border:1px solid #888; }
+td { font-family:'Kalam',cursive; font-size:11px; color:#1a3a8f; padding:3px 7px; border:1px solid #bbb; background:white; line-height:1.4; }
+tr:nth-child(even) td { background:#f8f8ff; }
+
+/* ── MCQ/Quiz ── */
+.mcq-opt { padding:3px 8px; margin:2px 0; font-size:12px; color:#1a3a8f; display:flex; gap:8px; align-items:flex-start; }
+.mcq-letter { width:18px; height:18px; border:1.5px solid #1a3a8f; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Caveat',cursive; font-size:11px; font-weight:700; flex-shrink:0; }
+.tf-row { display:flex; gap:12px; margin:6px 0; align-items:center; }
+.tf-box { border:1.5px solid #1a3a8f; border-radius:5px; padding:2px 14px; font-family:'Caveat',cursive; font-size:13px; font-weight:700; color:#1a3a8f; }
+.fill-line { display:inline-block; border-bottom:1.5px solid #1a3a8f; min-width:100px; margin:0 4px; }
+.q-num { font-size:14px; font-weight:700; color:#cc0000; }
+
+/* ── Tree Box ── */
+.tree-box { background:#f0f8ff; border:1.5px solid #1a3a8f; border-radius:6px; padding:10px 14px; margin:8px 0; font-family:'Kalam',cursive; font-size:12px; color:#1a3a8f; direction:ltr; line-height:1.9; }
+.tree-box .root  { color:#cc0000; font-weight:700; }
+.tree-box .l1    { color:#1a3a8f; padding-right:16px; }
+.tree-box .l2    { color:#228822; padding-right:32px; }
+.tree-box .l3    { color:#7c3aed; padding-right:48px; }
+
+/* ── Matrix ── */
+.matrix { display:inline-block; border-right:2px solid #1a3a8f; border-left:2px solid #1a3a8f; padding:6px 12px; font-family:'Kalam',cursive; font-size:12px; line-height:1.9; text-align:center; color:#1a3a8f; margin:6px; vertical-align:middle; }
+
+
+/* ── Course additions ── */
+:root{--ar:'Tajawal','Noto Sans Arabic',Tahoma,sans-serif;--mono:'JetBrains Mono','Fira Code',Consolas,'Courier New',monospace;}
+body,p,li,td,th,h3.sub-title,.tree-box,.matrix,.mcq-opt,.q-num{font-family:var(--ar);}
+p,li{line-height:23px;font-weight:500;}
+b,strong,h3.sub-title{font-weight:700;}
+td{font-weight:500;line-height:1.6;}
+
+/* inline code */
+code{font-family:var(--mono);direction:ltr;unicode-bidi:isolate;background:#e8edff;border:1px solid #c9d3f5;padding:0 5px;border-radius:4px;font-size:10.5px;font-weight:500;color:#2b3a9f;}
+.hafez-box code{background:#fff;border-color:#d8c8fb;color:#5b21b6;}
+.error-box code{background:#fff;border-color:#f0b4b4;color:#a10000;}
+.tip-box code{background:#fff;border-color:#f1d29a;color:#8a4b00;}
+.ans-box code{background:#fff;border-color:#a9d8ae;color:#1b5e20;}
+
+/* code block */
+pre.code{position:relative;direction:ltr;text-align:left;unicode-bidi:normal;background:#1f2335;border:none;border-left:5px solid #7c3aed;border-radius:8px;padding:26px 14px 10px 14px;margin:12px 0 10px;font-family:var(--mono);font-size:11.5px;font-weight:400;line-height:1.75;color:#d5dcf5;white-space:pre-wrap;word-break:break-word;box-shadow:2px 3px 8px rgba(30,30,70,.28);tab-size:2;}
+pre.code::before{content:'● ● ●   DART';position:absolute;top:0;left:0;right:0;height:19px;line-height:19px;padding:0 12px;background:#2a2f47;border-radius:3px 8px 0 0;font-family:var(--mono);font-size:9px;letter-spacing:1px;color:#8089b0;}
+pre.code .c{color:#7f8bb3;font-style:italic;}
+pre.code .c.rtl{direction:rtl;unicode-bidi:isolate;font-family:var(--ar);font-style:normal;font-size:11.5px;font-weight:500;}
+pre.code .c bdi{font-family:var(--mono);}
+pre.code .s{color:#a5e075;}
+pre.code .n{color:#ffb86b;}
+pre.code .k{color:#c792ea;font-weight:500;}
+pre.code .t{color:#7fdbff;}
+.tag{display:inline-block;font-family:'Caveat',cursive;font-size:13px;font-weight:700;color:#fff;padding:0 9px;border-radius:10px;margin-left:6px;vertical-align:middle;}
+.tag.fast{background:#228822;} .tag.slow{background:#cc0000;}
+
+ol{padding-right:24px;margin-bottom:4px;} ol li{margin-bottom:2px;}
+h3.sub-title.s4{font-size:13px;color:#7c3aed;margin-right:10px;}
+
+</style>
+</head>
+<body>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🎯</span><span class="doodle" style="bottom:80px;left:12px;">📓</span>
+<div class="content"><h1 class="page-title">Dart Session 🖊️</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><div class="diagram"><div class="diagram-title">العناوين الرئيسية</div><div class="flow"><div class="flow-box">1 Output & Variables</div><span class="arrow">→</span><div class="flow-box red">2 Null Safety</div><span class="arrow">→</span><div class="flow-box">3 Convert & Input</div><span class="arrow">→</span><div class="flow-box green">4 Control</div><span class="arrow">→</span><div class="flow-box purple">5 Functions</div></div></div>
+<div class="hafez-box"><p><strong>الفكرة العامة:</strong> Dart بتحاول تخلّي أخطاء الـ Run Time تطلع <span class="red-text">وإنت بتكتب</span> (Compile Time). ده سر Null Safety والـ Compiler اللي ماشي وراك.</p></div><div class="page-num">— 1 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🖨️</span><span class="doodle" style="bottom:80px;left:12px;">📦</span>
+<div class="content"><h1 class="page-title">Output والـ Variables</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><div class="hafez-box"><p><strong>الفكرة الأساسية:</strong> اللي مشترك مع C++ و Java بنعدّي عليه، واللي مختلف في Dart بنقف عنده: <code>var</code> و <code>const/final</code> و <code>dynamic</code> وفحص <code>is</code>.</p></div><div class="page-num">— 2 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🖨️</span><span class="doodle" style="bottom:80px;left:12px;">📦</span>
+<div class="content"><h1 class="page-title">Output والـ Variables</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">تجهيز البيئة قبل ما نبدأ</h2><p>الأول بنجهز الأدوات، والخطوات دي بتتعمل مرة واحدة بس:</p><ul><li>بنشتغل على <b>IntelliJ IDEA</b> ومعاه <b>Dart Plugin</b> (من Settings ثم Plugins).</li><li>لازم الـ IDE يعرف مكان الـ <b>Dart SDK</b>. لو Flutter متسطّب عندك، الـ SDK جوّاه في <code>flutter/bin/cache/dart-sdk</code>.</li><li>بنعمل <b>New Project</b> ونختار Dart (Console Application).</li><li>لو فعّلنا <b>Generate sample content</b> هيجهّز لنا ملفات تجريبية، وإحنا هنمسحها ونبدأ نضيف.</li></ul><h3 class="sub-title">شكل المشروع</h3><ul><li>فولدر <code>bin</code>: فيه ملفات الـ <code>main</code> اللي بنشغّلها.</li><li>فولدر <code>lib</code>: للأكواد اللي هنقسمها ونعمل لها import (بنستخدمه في الـ Extensions).</li><li>ملف <code>pubspec.yaml</code>: ده <b>ملف تسجيل المشروع</b>. فيه اسم المشروع ونسخة الـ SDK والـ dependencies (المكتبات الخارجية).</li></ul><div class="tip-box" data-label="💡 تركة"><p>عشان نشغّل <b>ملف واحد بس</b> من غير باقي المشروع: كليك يمين على الملف ثم <b>Run</b>. والنتيجة بتطلع في الـ <b>Console</b> تحت.</p></div><div class="page-num">— 3 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🖨️</span><span class="doodle" style="bottom:80px;left:12px;">📦</span>
+<div class="content"><h1 class="page-title">Output والـ Variables</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">الكومنتات</h2><pre class="code">// كومنت سطر واحد
+/* كومنت
+   على أكتر من سطر */
+/// Documentation comment (بيظهر في الـ IDE)</pre><div class="page-num">— 4 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🖨️</span><span class="doodle" style="bottom:80px;left:12px;">📦</span>
+<div class="content"><h1 class="page-title">Output والـ Variables</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">أنواع الداتا بالتفصيل</h2><h3 class="sub-title">الأرقام: <code>int</code> و <code>double</code> و <code>num</code></h3><pre class="code">int age = 20;         // أرقام صحيحة
+double price = 9.99;  // أرقام بكسور
+num n = 5;            // num بتشيل int أو double
+n = 2.5;              // ✅ ينفع لأن num هي الأب بتاعهم
+// int x = 5.5;       // ❌ Error: 5.5 مش int</pre><div class="hafez-box"><p><code>num</code> هي الـ Parent لـ <code>int</code> و <code>double</code>، وده أول مثال عملي على الـ <b>Inheritance</b>. لما نقول <code>num</code> معناها "أي رقم". ولما نحدد <code>int</code> بنضيّق وبنقول "صحيح بس".</p></div><h3 class="sub-title">الـ String</h3><pre class="code">String a = &#x27;single quote&#x27;;
+String b = &quot;double quote&quot;;
+String c = &#x27;&#x27;&#x27;سطر أول
+سطر تاني
+سطر تالت&#x27;&#x27;&#x27;;   // triple quotes للنص على أكتر من سطر</pre><ul><li>الـ S كابيتال (<code>String</code> مش <code>string</code>).</li><li>الـ Single والـ Double شغالين نفس الشغل، والـ Triple لو النص متعدد الأسطر.</li><li>لو النص جواه علامة اقتباس، استخدم النوع التاني: <code>"It's Dart"</code>.</li><li>الـ String ليها ميثودز كتير زي <code>length</code> و <code>toUpperCase()</code> (هنشوفها في قسم التحويل).</li></ul><h3 class="sub-title">الـ <code>bool</code> والـ Collections</h3><pre class="code">bool isOk = true;
+
+List&lt;int&gt; list = [1, 2, 3, 3];   // مرتبة، وبتقبل التكرار، وبتبدأ من index 0
+Set&lt;int&gt;  set  = {1, 2, 3, 3};   // مفيش تكرار: هتتحول لـ {1, 2, 3}
+Map&lt;String, int&gt; map = {&#x27;ali&#x27;: 20, &#x27;mona&#x27;: 22};  // key و value</pre><p>الأقواس بتفرّق:</p><ul><li><code>[ ]</code> → List</li><li><code>{ }</code> بقيم لوحدها → Set</li><li><code>{ key: value }</code> → Map</li></ul><div class="error-box" data-label="⚠️ خد بالك"><p><code>var x = {};</code> دي <b>Map</b> مش Set. لو عايز Set فاضي اكتب <code>&lt;int&gt;{}</code>.</p></div><h3 class="sub-title">أنواع أقل استخدامًا: <code>Runes</code> و <code>Symbol</code> و <code>Null</code></h3><ul><li><b>Runes</b>: بتمثّل الـ <b>Unicode</b> بتاع الحروف والـ Emoji. الكمبيوتر بيخزّن كل حرف كرقم (زي الـ ASCII: <code>A</code> = 65). والـ Unicode أوسع وفيه الـ Emoji كمان.</li></ul><pre class="code">Runes r = Runes(&#x27;\u{1F600}&#x27;);      // الكود بتاع الـ Emoji
+print(String.fromCharCodes(r));    // بيرجّعه لشكله</pre><ul><li><b>Symbol</b>: بتتكتب <code>#name</code> وده نادر الاستخدام.</li><li><b>Null</b>: النوع بتاع القيمة <code>null</code> (يعني "مفيش قيمة"). ده أساس Null Safety.</li></ul><div class="tip-box" data-label="💡 تركة"><p>قايمة الأنواع التسعة: <code>num</code> (و <code>int</code> و <code>double</code>) · <code>String</code> · <code>bool</code> · <code>List</code> · <code>Set</code> · <code>Map</code> · <code>Runes</code> · <code>Symbol</code> · <code>Null</code>.</p></div><div class="page-num">— 5 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🖨️</span><span class="doodle" style="bottom:80px;left:12px;">📦</span>
+<div class="content"><h1 class="page-title">Output والـ Variables</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">نقطة البداية: <code>main</code></h2><p>كل برنامج Dart بيبدأ من <code>main</code>، وهي نفسها Function. من غيرها الكود مش هيتنفذ.</p><pre class="code">void main() {
+  print(&#x27;Hello Dart&#x27;);
+}</pre><div class="page-num">— 6 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🖨️</span><span class="doodle" style="bottom:80px;left:12px;">📦</span>
+<div class="content"><h1 class="page-title">Output والـ Variables</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">الطباعة: <code>print</code> و <code>stdout.write</code></h2><ul><li><code>print</code> بتطبع وتنزل سطر جديد.</li><li>عشان تطبع على <b>نفس السطر</b> محتاج <code>import 'dart:io';</code> وتستخدم <code>stdout.write</code>.</li><li><code>stdout.writeln</code> = نفس <code>print</code>.</li></ul><pre class="code">import &#x27;dart:io&#x27;;
+
+void main() {
+  print(&#x27;سطر لوحده&#x27;);
+  stdout.write(&#x27;Hello &#x27;);
+  stdout.write(&#x27;Dart&#x27;); // على نفس السطر
+}</pre><div class="tip-box" data-label="💡 تركة"><p><code>dart:io</code> جاهزة مع Dart، مش محتاج تنزلها من برّه. IO = Input / Output.</p></div><div class="page-num">— 7 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🖨️</span><span class="doodle" style="bottom:80px;left:12px;">📦</span>
+<div class="content"><h1 class="page-title">Output والـ Variables</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">الـ String Interpolation (بدل الـ <code>+</code>)</h2><ul><li><code>$x</code> → قيمة متغير.</li><li><code>${ ... }</code> → أي Expression (عملية حسابية، استدعاء function...).</li><li>الـ <code>+</code> بتلزق String في String <b>بس</b>، فلو الطرف التاني رقم لازم <code>toString()</code>.</li></ul><pre class="code">int x = 3;
+print(&#x27;x = &#x27; + x.toString()); // Concatenation (طويلة)
+print(&#x27;x = $x&#x27;);              // Interpolation ✅
+print(&#x27;x + 2 = ${x + 2}&#x27;);    // Expression</pre><div class="error-box" data-label="⚠️ خد بالك"><p><code>'x = ' + x</code> من غير <code>toString()</code> هتطلع Error لأن x رقم.</p></div><div class="page-num">— 8 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🖨️</span><span class="doodle" style="bottom:80px;left:12px;">📦</span>
+<div class="content"><h1 class="page-title">Output والـ Variables</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">تعريف المتغير: النوع الصريح مقابل <code>var</code></h2><p><b>الطريقة الأولى: نكتب النوع بنفسنا</b></p><pre class="code">int age = 20;
+String name = &#x27;Ali&#x27;;</pre><p>كده إنت عملت <b>Restriction</b>: مش هيقبل غير النوع ده. <code>int x = 5.5;</code> ← Error.</p><p><b>الطريقة التانية: <code>var</code></b></p><pre class="code">var x = 5;   // Dart فهم إنها int
+x = 8;       // ✅ قيمة جديدة من نفس النوع
+// x = 5.5;  // ❌ Error: النوع اتحدد خلاص</pre><div class="hafez-box"><p><b>القاعدة اللي لازم تتحفظ:</b> مع <code>var</code> النوع بيتحدد من <b>أول قيمة</b> وبعد كده <b>ما ينفعش يتغير</b>، لكن القيمة تتغير عادي.</p></div><p><b>الحالة الغريبة: <code>var</code> من غير قيمة</b></p><pre class="code">var y;                  // مفيش قيمة ومفيش نوع
+print(y);               // null
+print(y.runtimeType);   // Null
+y = &#x27;Dart&#x27;;             // ✅ ينفع
+y = 10;                 // ✅ برضه ينفع</pre><div class="error-box" data-label="⚠️ خد بالك"><p><code>var y;</code> من غير قيمة بتبقى في الحقيقة <b>dynamic</b>، فبتقبل أي نوع بعد كده. دي نقطة الطلبة بتتلخبط فيها، فقولهم: "لو عايز النوع يتثبت، حط قيمة أول ما تعرّف".</p></div><div class="tip-box" data-label="💡 تركة"><p><code>runtimeType</code> بيجيبلك النوع الفعلي وقت التشغيل. أداة حلوة للتجريب.</p></div><div class="page-num">— 9 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🖨️</span><span class="doodle" style="bottom:80px;left:12px;">📦</span>
+<div class="content"><h1 class="page-title">Output والـ Variables</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">الثوابت: <code>const</code> مقابل <code>final</code></h2><p>الاتنين معناهم: <b>اتحط له قيمة مرة واحدة وخلاص</b>. الفرق في <b>إمتى</b> القيمة بتتحدد:</p><ul><li><code>const</code> → <b>Compile Time</b>. القيمة لازم تكون معروفة وإنت بتكتب الكود، يعني قيمة صريحة. <b>ممنوع</b> عملية حسابية بمتغيرات عادية.</li><li><code>final</code> → <b>Run Time</b>. القيمة بتتحسب وقت التشغيل، فينفع تاخد ناتج عملية حسابية.</li></ul><pre class="code">int a = 1;
+int b = 2;
+
+const x = 9;            // ✅ قيمة صريحة
+// const z = a + b;     // ❌ a و b مش ثوابت
+final y = a + b;        // ✅ بتتحسب وقت التشغيل
+// y = 7;               // ❌ اتحطت مرة وخلاص</pre><div class="tip-box" data-label="💡 تركة"><p>تشبيه سهل: <code>const</code> زي ما تكتب رقم الأوضة في الورقة قبل ما تروح. <code>final</code> زي ما تستنى لحد ما توصل وتشوف رقم الأوضة وبعدين تحطه ومتغيّرهوش.</p></div><h3 class="sub-title">الفرق مع الـ List (النقطة اللي هتوضّح كل حاجة)</h3><pre class="code">const c = [1, 2, 3];
+// c.add(4);     // ❌ Exception وقت التشغيل
+// c[0] = 7;     // ❌ Exception
+// الـ List بقت Read-Only بالكامل
+
+final f = [4, 5, 6];
+f.add(7);        // ✅ ينفع
+f[0] = 10;       // ✅ ينفع
+// f = [8, 9];   // ❌ Compile Error، المتغير نفسه ثابت</pre><div class="hafez-box"><p><b>الخلاصة:</b> <code>final</code> بتثبّت <b>المتغير</b> (ماينفعش يشاور على حاجة تانية). <code>const</code> بتثبّت <b>المتغير والمحتوى كمان</b>.</p></div><div class="page-num">— 10 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🖨️</span><span class="doodle" style="bottom:80px;left:12px;">📦</span>
+<div class="content"><h1 class="page-title">Output والـ Variables</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">المتغيرات اللي بتغير النوع: <code>dynamic</code> و <code>Object</code></h2><p>دلوقتي المتغير ممكن يغير <b>القيمة والنوع</b> مع بعض:</p><pre class="code">dynamic x = 1;
+x = &#x27;Dart&#x27;;   // ✅
+x = true;     // ✅
+x = 2.5;      // ✅
+
+Object y = 1;
+y = &#x27;Dart&#x27;;   // ✅ نفس الفكرة</pre><p>الاتنين بيعملوا نفس الشغل، والفرق:</p><ul><li><code>dynamic</code> مجرد <b>كلمة</b> بتقول لـ Dart "سيبه يتغير". بسيطة ومش هتجيب مشاكل. <b>ننصح بيها للمبتدئين.</b></li><li><code>Object</code> دي <b>الـ Parent Class</b> لكل الـ Classes في Dart، وراها مفهوم الـ Inheritance. استخدمها لما تفهم الـ OOP.</li></ul><h3 class="sub-title">⚠️ الفخ: استدعاء Method على متغير بيتغير نوعه</h3><pre class="code">dynamic x = &#x27;Dart&#x27;;
+print(x.toUpperCase()); // شغال لأن x دلوقتي String
+
+x = 5;
+print(x.toUpperCase()); // 💥 Exception وقت التشغيل
+// Class &#x27;int&#x27; has no instance method &#x27;toUpperCase&#x27;</pre><p>مع <code>dynamic</code> الـ Compiler <b>مش بيعترض</b>، والمشكلة بتظهر لما اليوزر يشغّل (Run Time).</p><p>مع <code>Object</code> الوضع أصعب: الـ Compiler <b>بيعترض من الأول</b>:</p><pre class="code">Object y = &#x27;Dart&#x27;;
+// print(y.toUpperCase()); // ❌ Compile Error
+// ليه؟ لأن Dart بتدوّر على toUpperCase جوه كلاس Object، مش جوه String</pre><div class="hafez-box"><p>الـ <code>y</code> شايلة String فعلًا، بس <b>الـ Variable متعرّف كـ Object</b>، فـ Dart بتتعامل معاه كـ Object.</p></div><h3 class="sub-title">الحل: <code>is</code> (بتفحص وبتعمل Cast في نفس الوقت)</h3><pre class="code">if (y is String) {
+  print(y.toUpperCase()); // ✅ Smart Cast تلقائي
+}</pre><ul><li><code>is</code> بتسأل: هو من النوع ده؟ ولو آه، بتحوّله <b>تلقائيًا</b> جوه الـ <code>if</code> (اسمها <b>Smart Cast</b>).</li><li><code>is!</code> عكسها.</li><li><code>as</code> بتعمل Cast يدوي: <code>String s = y as String;</code></li><li>⚠️ لو حاولت تعمل <code>as String</code> على متغير جواه int هتاخد <b>Type Cast Error</b>.</li></ul><div class="tip-box" data-label="💡 تركة"><p><b>قاعدة ذهبية:</b> مع أي <code>dynamic</code> أو <code>Object</code>، <b>افحص النوع بـ <code>is</code> قبل ما تنادي أي Method</b>.</p></div><h3 class="sub-title">Cast بين إيه وإيه؟</h3><p>الـ Cast بيبقى بين <b>Parent و Child</b> (من <code>Object</code> لـ <code>String</code> مثلًا). مش بين <code>int</code> و <code>String</code>، دول Children مش بيتحولوا لبعض بـ <code>as</code>. للتحويل بينهم هنستخدم <code>parse</code> و <code>toString</code> (القسم التالت).</p><div class="page-num">— 11 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🖨️</span><span class="doodle" style="bottom:80px;left:12px;">📦</span>
+<div class="content"><h1 class="page-title">Output والـ Variables</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">الـ Operators بالتفصيل</h2><p>في Dart اتنين عشر نوع Operators. اللي هو زي C++ و Java بنمشي عليه بسرعة، واللي اتفرّق بنوقف عنده.</p><h3 class="sub-title">١) الحسابية (Arithmetic)</h3><pre class="code">print(7 + 2);   // 9
+print(7 - 2);   // 5
+print(7 * 2);   // 14
+print(7 % 2);   // 1  (الباقي)
+print(7 / 2);   // 3.5  ← بترجّع double دايمًا
+print(7 ~/ 2);  // 3    ← قسمة صحيحة بترجّع int</pre><div class="error-box" data-label="⚠️ خد بالك"><p>ده الفرق الأهم: في Java و C++ لو قسمت int على int بتطلع int. في Dart الـ <code>/</code> بترجّع <b>double</b> دايمًا (حتى <code>4 / 2</code> = <code>2.0</code>)، ولو عايز int استخدم <code>~/</code>.</p></div><h3 class="sub-title">٢) الزيادة والنقصان (Increment / Decrement)</h3><p><code>x++</code> مش بالظبط زي <code>x + 1</code>، لأن <code>x++</code> <b>بتغيّر x نفسها</b>، أما <code>x + 1</code> بتحسب بس ومبتغيّرش حاجة.</p><pre class="code">int x = 5;
+print(x++);   // بيطبع 5 وبعدين x بقت 6   ← Postfix: يستخدم وبعدين يزوّد
+print(x);     // 6
+print(++x);   // بيزوّد الأول (7) وبعدين يطبع 7  ← Prefix</pre><div class="hafez-box"><p><b>القاعدة:</b> الـ <code>++</code> بعد المتغير (Postfix) = استخدم القيمة وبعدين زوّد. الـ <code>++</code> قبله (Prefix) = زوّد وبعدين استخدم.</p></div><h3 class="sub-title">٣) المقارنة (Comparison)</h3><p><code>==</code> و <code>!=</code> و <code>&gt;</code> و <code>&lt;</code> و <code>&gt;=</code> و <code>&lt;=</code>. وناتجهم دايمًا <b>bool</b> (<code>true</code> أو <code>false</code>).</p><pre class="code">print(5 == 5);   // true
+print(5 != 3);   // true
+print(5 &gt; 8);    // false</pre><h3 class="sub-title">٤) المنطقية (Logical)</h3><p><code>&amp;&amp;</code> (And) و <code>||</code> (Or) و <code>!</code> (Not). بتشتغل على قيم bool وبترجّع bool.</p><table><tr><th>A</th><th>B</th><th>And (&amp;&amp;)</th><th>Or (والتانية)</th></tr><tr><td>true</td><td>true</td><td>true</td><td>true</td></tr><tr><td>true</td><td>false</td><td>false</td><td>true</td></tr><tr><td>false</td><td>true</td><td>false</td><td>true</td></tr><tr><td>false</td><td>false</td><td>false</td><td>false</td></tr></table><ul><li>الـ <code>&amp;&amp;</code> لازم الاتنين true.</li><li>الـ <code>||</code> يكفي واحد true.</li><li>الـ <code>!</code> بتعكس القيمة.</li></ul><h3 class="sub-title">٥) الـ Bitwise (على مستوى البتّات)</h3><p>الفرق بين الـ Logical والـ Bitwise: الـ Logical بياخد <b>bool</b> ويطلّع bool. الـ Bitwise بياخد <b>أرقام</b> وبيشتغل على كل <b>Bit</b> في الرقم الـ Binary (في Dart الرقم الصحيح بيتمثّل بـ 64 bit).</p><pre class="code">// 5 = 0101   ،   3 = 0011
+print(5 &amp; 3);   // 0001 = 1   (And: الاتنين 1)
+print(5 | 3);   // 0111 = 7   (Or: واحد منهم 1)
+print(5 ^ 3);   // 0110 = 6   (Xor: مختلفين)
+print(~5);      // -6         (Not: بيقلب كل البتّات)</pre><p><b>الـ Shift:</b></p><pre class="code">print(1 &lt;&lt; 3);   // 8   (Shift Left: بيضرب في 2 بالأس 3)
+print(16 &gt;&gt; 2);  // 4   (Shift Right: بيقسم على 2 بالأس 2)</pre><div class="hafez-box"><p><b>القانون:</b> <code>x &lt;&lt; n</code> = <code>x * 2^n</code> و <code>x &gt;&gt; n</code> = <code>x ~/ 2^n</code>.</p></div><h3 class="sub-title">٦) التخصيص (Assignment)</h3><pre class="code">int x = 10;
+x += 5;   // x = x + 5  → 15
+x -= 3;   // 12
+x *= 2;   // 24
+x ~/= 5;  // 4
+x %= 3;   // 1</pre><h3 class="sub-title">٧) الشرطي (Ternary)</h3><pre class="code">int age = 20;
+String s = age &gt;= 18 ? &#x27;Adult&#x27; : &#x27;Minor&#x27;;   // شرط ? لو true : لو false</pre><h3 class="sub-title">٨) فحص النوع والـ Cast</h3><ul><li><code>x is String</code> بترجّع true لو النوع ده، و <code>x is! String</code> عكسها.</li><li><code>x as String</code> بتحوّل النوع، وبترمي Error لو مش من النوع ده.</li></ul><h3 class="sub-title">٩) أوبريتورات الـ Null والـ Cascade</h3><p>دول اللي خصّصنالهم قسم لوحدهم: <code>?.</code> و <code>!</code> و <code>??</code> و <code>??=</code> و <code>..</code>. شوفهم في <b>Null Safety</b>.</p><div class="tip-box" data-label="💡 تركة"><p><b>قايمة الـ 12 أوبريتور:</b> Arithmetic · Increment/Decrement · Comparison · Logical · Bitwise · Assignment · Conditional · Type Test · Cast · Null Safety · Null-Aware · Cascade.</p></div><div class="page-num">— 12 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🛡️</span><span class="doodle" style="bottom:80px;left:12px;">❓</span>
+<div class="content"><h1 class="page-title">Null Safety</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><div class="hafez-box"><p><strong>الفكرة الأساسية:</strong> الهدف: الغلط يطلع وإنت بتكتب مش عند اليوزر. <code>?</code> و <code>?.</code> و <code>!</code> و <code>??</code> و <code>??=</code> و <code>..</code>.</p></div><div class="page-num">— 13 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🛡️</span><span class="doodle" style="bottom:80px;left:12px;">❓</span>
+<div class="content"><h1 class="page-title">Null Safety</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">المشكلة: ليه Null Safety أصلًا؟</h2><pre class="code">var x;
+print(x.toUpperCase()); // 💥 NoSuchMethodError: toUpperCase was called on null</pre><p>ده <b>أشهر Error في البرمجة</b>. وخطورته إنه بيطلع في <b>Run Time</b>: اليوزر نازل التطبيق من Google Play وفجأة التطبيق <b>بيقفل في وشه</b> (Crash).</p><p>كمبرمج، الأسهل ليك إن الغلط يطلع وإنت لسه <b>بتكتب</b> (Compile Error) وتصلحه قبل ما التطبيق ينزل. ده بالظبط هدف Null Safety: <b>نحوّل Run Time Error لـ Compile Error.</b></p><div class="tip-box" data-label="💡 تركة"><p>الفكرة جاية من Swift، وبعدها أغلب اللغات الحديثة أخدتها.</p></div><div class="page-num">— 14 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🛡️</span><span class="doodle" style="bottom:80px;left:12px;">❓</span>
+<div class="content"><h1 class="page-title">Null Safety</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">الحل: كل نوع ليه شكلين</h2><pre class="code">String  name;   // Non-Nullable: ممنوع يشيل null
+String? name2;  // Nullable: مسموح يشيل null</pre><p>علامة الاستفهام <code>?</code> = مسموح بـ null. وده مع <b>كل</b> الأنواع (<code>int?</code> و <code>double?</code> و <code>List?</code>...).</p><h3 class="sub-title">١) الـ Non-Nullable لازم ياخد قيمة</h3><pre class="code">class Test {
+  String name; // ❌ Compile Error: لازم قيمة ابتدائية
+}</pre><p>إنت ما ادّتوش قيمة فمعناها null، وهو معرّف Non-Nullable، فالـ Compiler بيرفض.</p><h3 class="sub-title">٢) الـ Nullable: الـ Compiler ماشي وراك</h3><pre class="code">String? name;
+print(name.toUpperCase()); // ❌ Compile Error</pre><p>أول ما المتغير يبقى <code>?</code> الـ Compiler <b>بيراقبك في كل استخدام</b>، وبيقولك أحد حلين: <code>?.</code> أو <code>!</code>.</p><div class="page-num">— 15 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🛡️</span><span class="doodle" style="bottom:80px;left:12px;">❓</span>
+<div class="content"><h1 class="page-title">Null Safety</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">الأوبريتور الأول: <code>?.</code> (Call Conditional) — الآمن</h2><p>معناه: <b>"نفّذ بس لو مش null، ولو null تجاهل الاستدعاء"</b>.</p><pre class="code">String? name;
+print(name?.toUpperCase()); // null (من غير Exception)
+
+name = &#x27;Dart programming&#x27;;
+print(name?.toUpperCase()); // DART PROGRAMMING</pre><div class="error-box" data-label="⚠️ خد بالك"><p><b>نتيجة <code>?.</code> دايمًا Nullable.</b> لو هتخزنها لازم النوع يبقى <code>String?</code>:</p></div><pre class="code">String? newString = name?.toUpperCase(); // ✅
+// String newString = name?.toUpperCase(); ❌</pre><div class="page-num">— 16 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🛡️</span><span class="doodle" style="bottom:80px;left:12px;">❓</span>
+<div class="content"><h1 class="page-title">Null Safety</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">الأوبريتور التاني: <code>!</code> (Null Assertion / Force Unwrapping) — الخطر</h2><p>معناه: <b>"أنا ضامن إن القيمة مش null، كمّل"</b>.</p><pre class="code">String? name1;
+print(name1!.toUpperCase()); // 💥 Exception لو name1 فعلًا null</pre><ul><li>لو فيه قيمة → عادي.</li><li>لو null → <b>Exception</b> وبيقف الكود.</li></ul><div class="error-box" data-label="⚠️ خد بالك"><p><b>الـ <code>!</code> مش حل لمشكلة الـ null.</b> هو بس بيقول للـ Compiler "اسكت أنا مسؤول". استخدمه بس لما تكون متأكد 100%.</p></div><p><b>ناتج <code>!</code> بيكون Non-Nullable:</b></p><pre class="code">String newString1 = name1!.toUpperCase(); // String عادي مش String?</pre><h3 class="sub-title">طب لو عندي <code>if</code>، ليه أحتاج <code>!</code>؟</h3><p>سؤال ممتاز بيتسأل. الإجابة: <b>لما تحتاج تبعت قيمة Nullable لحاجة بتطلب Non-Nullable:</b></p><pre class="code">void test(String s) { ... }  // محتاجة String عادي
+
+String? name;
+// test(name);   // ❌ مش هينفع
+test(name!);     // ✅ حوّلتها Non-Nullable (Force Unwrapping)</pre><div class="tip-box" data-label="💡 تركة"><p><b>معلومة زيادة:</b> لو المتغير Local وعملت <code>if (name != null)</code> الـ Compiler غالبًا بيعمل Promotion لوحده وتستغنى عن <code>!</code> جوه الـ <code>if</code>. بس الـ Instance Variables (جوه الـ Classes) مش بتتعامل كده، وده هنشوفه في الـ OOP.</p></div><div class="page-num">— 17 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🛡️</span><span class="doodle" style="bottom:80px;left:12px;">❓</span>
+<div class="content"><h1 class="page-title">Null Safety</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">ملخص <code>?.</code> مقابل <code>!</code></h2><ul><li><code>?.</code> → لو null، <b>يتجاهل</b> والنتيجة null. ما فيش Exception. نتيجتها <b>Nullable</b>.</li><li><code>!</code> → لو null، <b>Exception</b>. نتيجتها <b>Non-Nullable</b>.</li></ul><div class="page-num">— 18 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🛡️</span><span class="doodle" style="bottom:80px;left:12px;">❓</span>
+<div class="content"><h1 class="page-title">Null Safety</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">أوبريتورات الـ Null-Aware: <code>??</code> و <code>??=</code></h2><p><b>القصة اللي هتفهّمهم:</b> تطبيق فيه شاشة Login وزرار <b>Skip</b>. اليوزر ضغط Skip فالاسم بقى null، والتطبيق بيقول: <code>Welcome null</code> 😬</p><h3 class="sub-title"><code>??</code> (If Null) — قيمة بديلة</h3><pre class="code">String? name;
+print(&#x27;Welcome ${name ?? &quot;Guest&quot;}&#x27;); // Welcome Guest
+
+name = &#x27;Dart User&#x27;;
+print(&#x27;Welcome ${name ?? &quot;Guest&quot;}&#x27;); // Welcome Dart User</pre><p>معناه: لو <code>name</code> مش null استخدمه، <b>وإلا</b> استخدم القيمة اللي بعد <code>??</code>. ملهاش تغيير في <code>name</code> نفسه.</p><pre class="code">String newName = name ?? &#x27;Guest&#x27;; // محتاج متغير جديد تخزن فيه</pre><h3 class="sub-title"><code>??=</code> (Assign If Null) — بيعدّل المتغير نفسه</h3><pre class="code">name ??= &#x27;Guest User&#x27;;
+print(&#x27;Hello $name&#x27;); // لو كان null بقى Guest User، ولو فيه قيمة فضل زي ما هو</pre><div class="hafez-box"><p><b>الفرق:</b> <code>??</code> بترجّع قيمة (محتاجة تخزنها). <code>??=</code> بتحط القيمة <b>في نفس المتغير</b>.</p></div><div class="page-num">— 19 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🛡️</span><span class="doodle" style="bottom:80px;left:12px;">❓</span>
+<div class="content"><h1 class="page-title">Null Safety</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">أوبريتور بونص: الـ Cascade <code>..</code></h2><p>بيختصر عليك سلسلة عمليات على نفس الـ Object في <b>Statement واحدة</b>.</p><pre class="code">class MyClass {
+  int x = 0;
+  int y = 0;
+  void add() =&gt; print(x + y);
+}
+
+// الطريقة العادية: 4 جمل
+MyClass obj = MyClass();
+obj.x = 5;
+obj.y = 10;
+obj.add();
+
+// بالـ Cascade: جملة واحدة (فيها semicolon واحدة بس)
+MyClass()
+  ..x = 5
+  ..y = 10
+  ..add(); // 15</pre><div class="tip-box" data-label="💡 تركة"><p>الفايدة في Flutter لما الكود بيكبر. لو الطلبة مش عندهم OOP قولهم "نرجعله بعدين" وعدّي.</p></div><div class="page-num">— 20 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">⌨️</span><span class="doodle" style="bottom:80px;left:12px;">🔄</span>
+<div class="content"><h1 class="page-title">التحويل وقراءة Input</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><div class="hafez-box"><p><strong>الفكرة الأساسية:</strong> <code>readLineSync()</code> بترجّع <code>String?</code>. <code>parse</code> مقابل <code>tryParse</code>. <code>try/catch</code> بتمسك الـ Error مش بتصلّحه. والـ String Immutable.</p></div><div class="page-num">— 21 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">⌨️</span><span class="doodle" style="bottom:80px;left:12px;">🔄</span>
+<div class="content"><h1 class="page-title">التحويل وقراءة Input</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">قراءة Input من اليوزر</h2><pre class="code">import &#x27;dart:io&#x27;;
+
+void main() {
+  print(&#x27;Enter your name:&#x27;);
+  String name = stdin.readLineSync()!;
+  print(&#x27;Hello, $name!&#x27;);
+}</pre><ul><li><code>stdin.readLineSync()</code> بترجّع <b><code>String?</code></b> (Nullable).</li><li>لو اليوزر داس Enter من غير ما يكتب، بترجع <b>String فاضية <code>''</code></b> مش null. بترجع null بس لو الـ stdin اتقفل (<code>Ctrl+D</code>).</li><li>عشان كده بنستخدم <code>!</code> هنا، وإحنا مطمنين.</li></ul><div class="page-num">— 22 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">⌨️</span><span class="doodle" style="bottom:80px;left:12px;">🔄</span>
+<div class="content"><h1 class="page-title">التحويل وقراءة Input</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">قراءة رقم</h2><p><code>readLineSync</code> دايمًا بترجّع String، فلازم نحوّل لـ int.</p><pre class="code">print(&#x27;Enter your age:&#x27;);
+int? age = int.tryParse(stdin.readLineSync()!);
+if (age != null) {
+  print(&#x27;You are $age years old.&#x27;);
+} else {
+  print(&#x27;Invalid age input.&#x27;);
+}</pre><p>لو عايز <b>قيمة افتراضية</b> بدل رسالة خطأ، استخدم <code>??</code> في سطر واحد:</p><pre class="code">int mark = int.tryParse(stdin.readLineSync()!) ?? 0;</pre><div class="page-num">— 23 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">⌨️</span><span class="doodle" style="bottom:80px;left:12px;">🔄</span>
+<div class="content"><h1 class="page-title">التحويل وقراءة Input</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">التحويلات السهلة (من غير مشاكل)</h2><pre class="code">int x = 1;
+double y = x.toDouble();   // int → double
+int z = y.toInt();         // double → int (بتقطع الكسر)
+String s = z.toString();   // int → String
+String s1 = &#x27;$z&#x27;;          // نفس الحاجة بالـ Interpolation</pre><div class="page-num">— 24 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">⌨️</span><span class="doodle" style="bottom:80px;left:12px;">🔄</span>
+<div class="content"><h1 class="page-title">التحويل وقراءة Input</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">التحويل اللي فيه مشكلة: من String لرقم</h2><pre class="code">int a = int.parse(&#x27;10&#x27;);   // ✅ 10
+int b = int.parse(&#x27;1o&#x27;);   // 💥 FormatException (حرف o مش صفر)</pre><p>بتاع الـ <code>parse</code>: لو الـ String مش رقم صافي <b>بيرمي Exception</b>.</p><h3 class="sub-title">الحل الأول: <code>try / catch</code></h3><pre class="code">int? a;
+try {
+  a = int.parse(&#x27;1o&#x27;);
+  print(a + 1);
+} catch (e) {
+  print(&#x27;Invalid integer string&#x27;);
+}
+print(&#x27;End of main&#x27;); // بتتنفذ عادي</pre><div class="error-box" data-label="⚠️ خد بالك"><p><b>غلط شائع:</b> الناس فاكرة إن <code>try/catch</code> "بتصلّح" الـ Error. هي <b>مش بتصلّحه</b>، هي بس <b>بتمسكه</b> عشان باقي الكود يكمّل. من غيرها أول Exception بيوقف البرنامج خالص.</p></div><h3 class="sub-title">الحل التاني (الأفضل): <code>tryParse</code></h3><pre class="code">int? a = int.tryParse(&#x27;1o&#x27;);  // null بدل Exception
+print(a);                      // null</pre><div class="hafez-box"><p><b>الخلاصة:</b> <code>parse</code> لو فشلت بترمي Exception. <code>tryParse</code> لو فشلت بترجّع <code>null</code>، وعشان كده نتيجتها <code>int?</code> ولازم تتعامل مع الـ null (<code>if</code> أو <code>??</code>).</p></div><div class="tip-box" data-label="💡 تركة"><p>فيه حل تالت بتفحص فيه كل حرف بنفسك (الـ ASCII بتاع الأرقام من 48 لـ 57). مش محتاجينه طالما <code>tryParse</code> موجودة.</p></div><div class="page-num">— 25 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">⌨️</span><span class="doodle" style="bottom:80px;left:12px;">🔄</span>
+<div class="content"><h1 class="page-title">التحويل وقراءة Input</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">ميثودز الأرقام</h2><pre class="code">int i = 4;
+print(i.isEven);      // true
+print(i.isOdd);       // false
+print(i.isNegative);  // false
+
+double d = 3.5;
+print(d.ceil());      // 4  (لفوق)
+print(d.floor());     // 3  (لتحت)
+print(d.round());     // 4  (أقرب رقم)
+print(d.truncate());  // 3  (يقطع الكسر)</pre><div class="error-box" data-label="⚠️ خد بالك"><p>الأربعة دول بيرجّعوا <b>int</b> مش double.</p></div><div class="page-num">— 26 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">⌨️</span><span class="doodle" style="bottom:80px;left:12px;">🔄</span>
+<div class="content"><h1 class="page-title">التحويل وقراءة Input</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">ميثودز الـ String</h2><pre class="code">String name = &#x27;Dart programming language&#x27;;
+
+name[0];                        // D (الـ String زي الـ Array)
+name.split(&#x27; &#x27;);                // List: [Dart, programming, language]
+name.split(&#x27;&#x27;);                 // List من الحروف
+&#x27;A&#x27;.padRight(3, &#x27;*&#x27;);           // A**
+&#x27;A&#x27;.padLeft(3, &#x27;*&#x27;);            // **A
+&#x27;   Dart   &#x27;.trim();            // Dart  (وفي trimLeft و trimRight)
+&#x27;Dart Language&#x27;.substring(0, 4);// Dart  (الـ End مش داخل)
+&#x27;Dart Language&#x27;.substring(5);   // Language (للآخر)
+&#x27;Dart and Dart&#x27;.replaceFirst(&#x27;Dart&#x27;, &#x27;Flutter&#x27;); // Flutter and Dart</pre><div class="page-num">— 27 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">⌨️</span><span class="doodle" style="bottom:80px;left:12px;">🔄</span>
+<div class="content"><h1 class="page-title">التحويل وقراءة Input</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">الـ String Immutable</h2><p>الـ String <b>مبتتعدلش</b> أبدًا. كل ميثود بترجّع <b>String جديدة</b>.</p><pre class="code">String text = &#x27;A&#x27;;
+text.padRight(3, &#x27;*&#x27;);      // ❌ مش بتغير text
+print(text);                 // لسه A
+
+text = text.padRight(3, &#x27;*&#x27;); // ✅ لازم تستقبل الناتج
+print(text);                 // A**</pre><p>شكلها في الـ Memory: <code>text</code> كانت بتشاور على Object فيه <code>A</code>. بعد التعديل اتعمل <b>Object جديد</b> فيه <code>A**</code>، و<code>text</code> بقت بتشاور عليه. الأول فضل زي ما هو.</p><div class="tip-box" data-label="💡 تركة"><p>عشان كده دايمًا بنحط الناتج في متغير ونطبعه.</p></div><div class="page-num">— 28 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🚦</span><span class="doodle" style="bottom:80px;left:12px;">🔁</span>
+<div class="content"><h1 class="page-title">Control Statements</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><div class="hafez-box"><p><strong>الفكرة الأساسية:</strong> نفس C++ و Java. ركّز على ترتيب <code>else if</code> و <code>switch</code> في Dart 3 وفخ <code>for in</code> والـ Labels.</p></div><div class="page-num">— 29 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🚦</span><span class="doodle" style="bottom:80px;left:12px;">🔁</span>
+<div class="content"><h1 class="page-title">Control Statements</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title"><code>if / else if / else</code></h2><pre class="code">int x = 4;
+if (x.isOdd) {
+  print(&#x27;odd&#x27;);
+} else if (x == 0) {
+  print(&#x27;zero&#x27;);
+} else {
+  print(&#x27;even&#x27;);
+}</pre><div class="error-box" data-label="⚠️ خد بالك"><p><b>الترتيب بيفرق:</b> الصفر رقم زوجي، فلازم تفحصه قبل فرع الزوجي وإلا مش هيوصله أبدًا.</p></div><div class="page-num">— 30 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🚦</span><span class="doodle" style="bottom:80px;left:12px;">🔁</span>
+<div class="content"><h1 class="page-title">Control Statements</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title"><code>switch</code></h2><pre class="code">switch (grade) {
+  case &#x27;A&#x27;:
+  case &#x27;B&#x27;:
+    print(&#x27;Good&#x27;);   // أكتر من case بنفس الـ Body
+  default:
+    print(&#x27;Other&#x27;);
+}</pre><ul><li>بتشتغل على الثوابت. للـ Range (أكبر من/أصغر من) استخدم <code>if</code>.</li><li>💡 في Dart 3 الـ <code>break</code> <b>اختياري</b>، والـ <code>switch</code> بقت أذكى وبتدعم <b>Patterns</b> (زي <code>case Car():</code> على Object، و <code>when</code> للشروط).</li><li>الأحسن مع الـ Object تستخدم <code>enum</code> (بعد الـ OOP).</li></ul><div class="page-num">— 31 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🚦</span><span class="doodle" style="bottom:80px;left:12px;">🔁</span>
+<div class="content"><h1 class="page-title">Control Statements</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">الـ Loops</h2><pre class="code">for (int i = 0; i &lt; 3; i++) { print(i); }
+while (cond) { ... }
+do { ... } while (cond);</pre><h3 class="sub-title">⚠️ <code>for in</code>: الفخ الشهير</h3><pre class="code">List numbers = [10, 20, 30];
+
+for (int i = 0; i &lt; numbers.length; i++) { }  // i = index
+for (int k in numbers) { }                     // k = العنصر نفسه مش الـ index
+
+for (int k in numbers) { k++; }
+print(numbers); // [10, 20, 30] لسه زي ما هي!</pre><p><code>k</code> <b>نسخة</b> من القيمة. عشان تعدّل في الـ List لازم تستخدم الـ index: <code>numbers[i]++</code>.</p><div class="page-num">— 32 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🚦</span><span class="doodle" style="bottom:80px;left:12px;">🔁</span>
+<div class="content"><h1 class="page-title">Control Statements</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title"><code>break</code> و <code>continue</code> والـ Labels</h2><ul><li><code>break</code> بتخرج من الـ Loop <b>اللي جواها بس</b>.</li><li><code>continue</code> بتعدّي اللفة الحالية وتكمل.</li><li>عشان تتحكم في <b>الـ Loop الخارجي</b> من جوه Loop داخلي، حط <b>Label</b>:</li></ul><pre class="code">outer:
+for (int i = 0; i &lt; 10; i++) {
+  for (int j = 0; j &lt; 10; j++) {
+    if (j == 5) continue outer;  // روح للفة الجاية في الـ outer
+    // break outer;              // أو اخرج من الاتنين
+    print(&#x27;$i : $j&#x27;);
+  }
+}</pre><div class="tip-box" data-label="💡 تركة"><p>الـ Label شبه <code>goto</code> بس بيتستخدم عمليًا مع <code>break</code> و <code>continue</code> بس.</p></div><div class="page-num">— 33 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🚦</span><span class="doodle" style="bottom:80px;left:12px;">🔁</span>
+<div class="content"><h1 class="page-title">Control Statements</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title"><code>while</code> و <code>do while</code> والفرق بينهم</h2><pre class="code">int i = 0;
+while (i &lt; 3) {      // بيفحص الشرط الأول
+  print(i);
+  i++;
+}
+
+do {
+  print(i);          // بينفّذ مرة على الأقل وبعدين يفحص
+  i++;
+} while (i &lt; 3);</pre><div class="hafez-box"><p>الفرق الوحيد: <code>while</code> ممكن مينفّذش ولا مرة لو الشرط false من الأول. أما <code>do while</code> فبتنفّذ <b>مرة على الأقل</b>.</p></div><div class="page-num">— 34 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🚦</span><span class="doodle" style="bottom:80px;left:12px;">🔁</span>
+<div class="content"><h1 class="page-title">Control Statements</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">متى نستخدم إيه؟</h2><ul><li><code>for</code> لما أعرف عدد اللفات.</li><li><code>while</code> لما أكرر لحد ما شرط يحصل.</li><li><code>for in</code> لما أعدّي على كل عناصر List من غير ما أحتاج الـ index.</li><li><code>if</code> للـ Range والشروط المتغيرة، و <code>switch</code> للقيم الثابتة.</li></ul><div class="page-num">— 35 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🧩</span><span class="doodle" style="bottom:80px;left:12px;">🚀</span>
+<div class="content"><h1 class="page-title">Functions</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><div class="hafez-box"><p><strong>الفكرة الأساسية:</strong> الأنواع الأربعة، Positional و Named و required و Default، Lambda و Anonymous و Higher-Order و Extensions.</p></div><div class="page-num">— 36 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🧩</span><span class="doodle" style="bottom:80px;left:12px;">🚀</span>
+<div class="content"><h1 class="page-title">Functions</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">شكل الـ Function</h2><pre class="code">ReturnType  Name  (Parameters)  { Body }</pre><ul><li><code>main</code> نفسها Function: Return Type <code>void</code>، من غير Parameters.</li><li>الـ Return Type: <code>void</code> (مفيش قيمة راجعة) أو أي نوع (<code>int</code> و <code>String</code> و <code>List</code> وكلاس من عندك).</li><li>⚠️ اسم الـ Function: ماينفعش يبدأ برقم ولا فيه مسافات ولا كلمة محجوزة. والـ <code>_</code> في الأول معناها <b>Private</b> في Dart!</li></ul><pre class="code">void sayHi() =&gt; print(&#x27;Hi&#x27;);                // void من غير Parameters
+void greet(String name) =&gt; print(&#x27;Hi $name&#x27;); // void بـ Parameters
+int getNumber() =&gt; 42;                       // Return من غير Parameters
+int add(int x, int y) =&gt; x + y;              // Return بـ Parameters</pre><ul><li><b>Parameter</b> = اللي بتكتبه في التعريف. <b>Argument</b> = القيمة اللي بتبعتها وقت الاستدعاء.</li><li>الـ Arguments لازم تتطابق في <b>العدد والنوع والترتيب</b> (إلا في الـ Named، هنشوفها دلوقتي).</li></ul><div class="tip-box" data-label="💡 تركة"><p><code>main(List&lt;String&gt; args)</code>: الـ <code>args</code> بتستقبل اللي بتكتبه في الـ Command Line (<code>dart main.dart marwa dart</code>). <code>args[0]</code> = <code>marwa</code>.</p></div><div class="page-num">— 37 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🧩</span><span class="doodle" style="bottom:80px;left:12px;">🚀</span>
+<div class="content"><h1 class="page-title">Functions</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">أنواع الـ Parameters</h2><p>مقسومة لـ <b>Required</b> (لازم تتبعت) و <b>Optional</b> (اختياري) وليها 3 أشكال.</p><h3 class="sub-title">١) Positional Optional <code>[ ]</code></h3><pre class="code">void sayHi([String? name]) {
+  print(&#x27;Hi ${name ?? &#x27;Guest&#x27;}&#x27;);
+}
+
+sayHi();          // Hi Guest
+sayHi(&#x27;Marwa&#x27;);   // Hi Marwa</pre><ul><li>لازم الـ Parameter يبقى <b>Nullable</b> (<code>String?</code>) لأنه ممكن ميتبعتش، أو تديله Default Value.</li><li>⚠️ <b>الاختياري لازم يجي في الآخر</b> بعد الـ Required.</li><li>⚠️ <b>المشكلة:</b> الترتيب بيفرق. لو عايز تبعت الـ 4 وتسيب التالت، لازم تبعت <code>null</code> صراحة:</li></ul><pre class="code">void setUserData(int id, String name, [double? salary, String? dept]) { ... }
+
+setUserData(101, &#x27;Ahmed&#x27;);
+setUserData(101, &#x27;Ahmed&#x27;, 50000);
+setUserData(101, &#x27;Ahmed&#x27;, null, &#x27;Sales&#x27;); // null بتحجز مكان salary</pre><h3 class="sub-title">٢) Named Optional <code>{ }</code></h3><pre class="code">void greet({String? name}) {
+  print(&#x27;Hello ${name ?? &#x27;Guest&#x27;}&#x27;);
+}
+
+greet();                // Hello Guest
+greet(name: &#x27;Omar&#x27;);    // لازم تكتب اسم الـ Parameter
+// greet(&#x27;Omar&#x27;);       // ❌ Error</pre><p><b>ميزتها الكبيرة:</b> الترتيب <b>ماعادش مهم</b> ومش محتاج <code>null</code> تحجز بيه مكان.</p><pre class="code">void setEmpData(int id, String name, {double? salary, String? dept}) { ... }
+
+setEmpData(1, &#x27;Ali&#x27;, dept: &#x27;IT&#x27;, salary: 60000); // ترتيب الـ Named حر</pre><h3 class="sub-title">٣) Required Named: <code>required</code></h3><p>عايز الاسم يتكتب (للوضوح) بس إجباري؟ استخدم <code>required</code>:</p><pre class="code">void setEmpData({
+  required int id,
+  required String name,
+  double? salary,
+  String? dept,
+}) { ... }
+
+setEmpData(name: &#x27;Mohamed&#x27;, id: 101);               // ✅ أي ترتيب
+setEmpData(id: 101, name: &#x27;Mohamed&#x27;, dept: &#x27;HR&#x27;);   // ✅
+// setEmpData(id: 101);                              // ❌ name ناقص</pre><div class="hafez-box"><p><b>ده الشكل اللي هتشوفه طول الوقت في Flutter.</b> ركّز عليه.</p></div><h3 class="sub-title">٤) Default Values — من غير <code>?</code> ومن غير null</h3><pre class="code">void setDefaultUserData(int id, String name, [String dept = &#x27;General&#x27;]) {
+  print(&#x27;$id $name $dept&#x27;);
+}
+
+setDefaultUserData(102, &#x27;Mona&#x27;);        // 102 Mona General
+setDefaultUserData(102, &#x27;Mona&#x27;, &#x27;IT&#x27;);  // 102 Mona IT</pre><div class="tip-box" data-label="💡 تركة"><p>الـ Default بيشتغل مع <code>[ ]</code> ومع <code>{ }</code> الاتنين (<code>{String dept = 'General'}</code>).</p></div><div class="page-num">— 38 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🧩</span><span class="doodle" style="bottom:80px;left:12px;">🚀</span>
+<div class="content"><h1 class="page-title">Functions</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">Lambda / Arrow Function <code>=&gt;</code></h2><p>لو الـ Body <b>Expression واحدة</b> بس، شيل الأقواس وحط <code>=&gt;</code>. وبتشيل كلمة <code>return</code> كمان:</p><pre class="code">int getNumber() { return Random().nextInt(5); }  // العادية
+int getNumber() =&gt; Random().nextInt(5);          // Lambda</pre><div class="error-box" data-label="⚠️ خد بالك"><p>مفيش Arrow لو فيه <b>أكتر من Statement</b>. (جملة واحدة على أكتر من سطر ماشية.)</p></div><div class="page-num">— 39 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🧩</span><span class="doodle" style="bottom:80px;left:12px;">🚀</span>
+<div class="content"><h1 class="page-title">Functions</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">الـ Function كأنها Variable</h2><pre class="code">void sayHi(String name) =&gt; print(&#x27;Hi $name&#x27;);
+
+Function f = sayHi;   // ⚠️ من غير أقواس! لو كتبت sayHi() يبقى استدعاء
+f(&#x27;Ahmed&#x27;);           // Hi Ahmed</pre><p>لو حطيت أقواس بتبقى بتستدعيها، والمتغير هيشيل الناتج مش الـ Function.</p><div class="page-num">— 40 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🧩</span><span class="doodle" style="bottom:80px;left:12px;">🚀</span>
+<div class="content"><h1 class="page-title">Functions</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">Anonymous Function (من غير اسم)</h2><pre class="code">Function f = (String name) =&gt; print(&#x27;Hi $name&#x27;);
+f(&#x27;Ahmed&#x27;);</pre><p>لو الجسم أكتر من جملة بتكتبها بـ <code>{ }</code> عادي. <b>ليه بنتعلمها؟</b> لأنها أساس الـ Higher-Order Functions اللي بعدها، وبتتكتب كتير جدًا في Flutter.</p><div class="page-num">— 41 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🧩</span><span class="doodle" style="bottom:80px;left:12px;">🚀</span>
+<div class="content"><h1 class="page-title">Functions</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">Higher-Order Functions</h2><div class="tip-box" data-label="💡 تركة"><p><b>Higher-Order Function</b> = Function بتاخد Function كـ Parameter <b>أو</b> بترجّع Function.</p></div><h3 class="sub-title">النوع الأول: بتاخد Function</h3><pre class="code">void calc({required int x, required int y, Function? operation}) {
+  if (operation != null) {
+    print(operation(x, y));
+  } else {
+    print(&#x27;Default (addition): ${x + y}&#x27;);
+  }
+}
+
+Function f = (int x, int y) =&gt; x + y;
+calc(x: 5, y: 8, operation: f);                          // 13
+calc(x: 5, y: 8, operation: (int x, int y) =&gt; x * y);    // 40  ← الشكل الشائع
+calc(x: 5, y: 8);                                        // Default</pre><ul><li>الـ Function الاختيارية لازم تبقى <code>Function?</code>.</li><li>⚠️ فحص <code>operation != null</code> قبل الاستدعاء مهم.</li></ul><h3 class="sub-title">النوع التاني: بترجّع Function</h3><pre class="code">Function? calc1(String op) {
+  switch (op) {
+    case &#x27;add&#x27;:   return (int x, int y) =&gt; x + y;
+    case &#x27;times&#x27;: return (int x, int y) =&gt; x * y;
+    default:      return null;
+  }
+}
+
+Function? fn = calc1(&#x27;add&#x27;);
+print(fn!(3, 4));            // 7   ← ! لأن Function? ممكن تبقى null
+print(calc1(&#x27;times&#x27;)!(3, 4)); // 12  ← الشكل المختصر</pre><div class="tip-box" data-label="💡 تركة"><p><b>تركة للشرح:</b> في أول مرة الـ default كان بيرجّع <code>0</code> لما العملية مش موجودة. المحاضر نبّه إن <code>0</code> <b>قيمة صحيحة</b> فهتخدع اليوزر (كأن العملية اتحسبت). الصح تطلع <code>null</code> أو رسالة. دي بتعلّم فكرة إن الـ <code>null</code> أحيانًا <b>معلومة</b> مش مشكلة.</p></div><div class="tip-box" data-label="💡 تركة"><p><b>نصيحة إضافية:</b> <code>Function</code> لوحدها مش بتحدد شكل الـ Parameters. الأدق تكتب <code>int Function(int, int)</code> وساعتها الـ Compiler يفحص لك الأنواع. (اختياري، لو الطلبة مرتاحين.)</p></div><div class="page-num">— 42 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">🧩</span><span class="doodle" style="bottom:80px;left:12px;">🚀</span>
+<div class="content"><h1 class="page-title">Functions</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">Extension Functions</h2><div class="tip-box" data-label="💡 تركة"><p><b>المشكلة:</b> عندك Function بتعمل Capital لأول حرف في كل كلمة، وعايز تكتب <code>name.capitalize()</code> زي ما بتكتب <code>name.toUpperCase()</code>. ماينفعش تعدّل في كلاس <code>String</code>... بس ينفع تعمل <b>Extension</b>.</p></div><pre class="code">// string_ext.dart
+extension StringExtension on String {
+  String capitalize() {
+    if (isEmpty) return this;
+    return split(&#x27; &#x27;)
+        .map((w) =&gt; &#x27;${w[0].toUpperCase()}${w.substring(1).toLowerCase()}&#x27;)
+        .join(&#x27; &#x27;);
+  }
+}</pre><p>الاستخدام (لازم <code>import</code> للملف):</p><pre class="code">import &#x27;string_ext.dart&#x27;;
+
+void main() {
+  print(&#x27;fLutTeR dArT&#x27;.capitalize()); // Flutter Dart
+}</pre><p>شرح الأجزاء:</p><ul><li><code>extension</code> الكلمة المفتاحية. <code>StringExtension</code> اسم اختياري.</li><li><code>on String</code> <b>دي المهمة</b>: بتقول الـ Extension ده هيتضاف لكلاس <code>String</code>.</li><li>جوه الـ Extension مفيش Parameter للـ String لأن <code>this</code> = الـ String اللي نادت الـ Function. وتقدر تشيل <code>this</code> وتكتب <code>split(' ')</code> على طول.</li></ul><div class="error-box" data-label="⚠️ خد بالك"><p><b>الـ Extension مالوش علاقة بالـ Inheritance.</b> ده بس بيضيف Methods.</p></div><p><b>مثال تاني: Extension على <code>Stdin</code></b> (يرجع لقراءة الـ Input):</p><pre class="code">import &#x27;dart:io&#x27;;
+
+extension InExtensions on Stdin {
+  int? readInt() =&gt; int.tryParse(stdin.readLineSync()!);
+}
+
+// الاستخدام
+int? n = stdin.readInt();
+print(&#x27;You entered: ${n ?? &#x27;Invalid number&#x27;}&#x27;);</pre><div class="tip-box" data-label="💡 تركة"><p>ينفع تعمل Extension على أي Class: <code>int</code> و <code>double</code> وحتى كلاسات إنت عاملها. 💡 الفايدة العملية: مع الوقت هيبقى عندك Folder اسمه <code>extensions</code> بتشيله معاك في كل Project. في Flutter بتختصر كود كتير في سطر واحد.</p></div><div class="page-num">— 43 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">📝</span><span class="doodle" style="bottom:80px;left:12px;">✏️</span>
+<div class="content"><h1 class="page-title">أسئلة مراجعة</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><h2 class="section-title">اختار الإجابة الصح</h2><div class="exam-q"><p><span class="q-num">Q1.</span> What does <code>var x = 5; x = 5.5;</code> do?</p><div class="mcq-opt"><div class="mcq-letter">A</div><p>Works fine</p></div><div class="mcq-opt"><div class="mcq-letter">B</div><p>Compile Error</p></div><div class="mcq-opt"><div class="mcq-letter">C</div><p>Runtime Exception</p></div><div class="mcq-opt"><div class="mcq-letter">D</div><p>x becomes dynamic</p></div></div><div class="exam-q"><p><span class="q-num">Q2.</span> Which can take its value from <code>a + b</code> (variables) ?</p><div class="mcq-opt"><div class="mcq-letter">A</div><p>const</p></div><div class="mcq-opt"><div class="mcq-letter">B</div><p>final</p></div><div class="mcq-opt"><div class="mcq-letter">C</div><p>both</p></div><div class="mcq-opt"><div class="mcq-letter">D</div><p>none</p></div></div><div class="exam-q"><p><span class="q-num">Q3.</span> <code>Object y = 'Dart'; y.toUpperCase();</code> gives:</p><div class="mcq-opt"><div class="mcq-letter">A</div><p>Works</p></div><div class="mcq-opt"><div class="mcq-letter">B</div><p>Runtime Exception</p></div><div class="mcq-opt"><div class="mcq-letter">C</div><p>Compile Error</p></div><div class="mcq-opt"><div class="mcq-letter">D</div><p>null</p></div></div><div class="exam-q"><p><span class="q-num">Q4.</span> The result type of <code>name?.toUpperCase()</code> is:</p><div class="mcq-opt"><div class="mcq-letter">A</div><p>String</p></div><div class="mcq-opt"><div class="mcq-letter">B</div><p>String?</p></div><div class="mcq-opt"><div class="mcq-letter">C</div><p>dynamic</p></div><div class="mcq-opt"><div class="mcq-letter">D</div><p>void</p></div></div><div class="exam-q"><p><span class="q-num">Q5.</span> <code>int.tryParse('1o')</code> returns:</p><div class="mcq-opt"><div class="mcq-letter">A</div><p>0</p></div><div class="mcq-opt"><div class="mcq-letter">B</div><p>Exception</p></div><div class="mcq-opt"><div class="mcq-letter">C</div><p>null</p></div><div class="mcq-opt"><div class="mcq-letter">D</div><p>1</p></div></div><div class="exam-q"><p><span class="q-num">Q6.</span> Best way to call <code>setEmp(id:..., name:...)</code> in any order?</p><div class="mcq-opt"><div class="mcq-letter">A</div><p>[ ] Positional</p></div><div class="mcq-opt"><div class="mcq-letter">B</div><p>{ } Named</p></div><div class="mcq-opt"><div class="mcq-letter">C</div><p>Default value</p></div><div class="mcq-opt"><div class="mcq-letter">D</div><p>Lambda</p></div></div><div class="page-num">— 44 —</div></div></div>
+<div class="page"><div class="hole" style="top:80px;"></div><div class="hole" style="top:300px;"></div><div class="hole" style="top:520px;"></div><div class="hole" style="top:740px;"></div>
+<span class="doodle" style="top:60px;left:12px;">✅</span><span class="doodle" style="bottom:80px;left:12px;">🎓</span>
+<div class="content"><h1 class="page-title">الإجابات</h1><p style="text-align:center;color:#888;font-size:13px;margin-bottom:10px;">Dart Course | مرجع أنا والفايسيز والشباب</p><table><tr><th>السؤال</th><th>الإجابة</th><th>السبب</th></tr><tr><td><span class="red-text">Q1</span></td><td><span class="highlight">B</span></td><td>النوع اتقفل على int من أول قيمة.</td></tr><tr><td><span class="red-text">Q2</span></td><td><span class="highlight">B</span></td><td>final بتتحسب Run Time.</td></tr><tr><td><span class="red-text">Q3</span></td><td><span class="highlight">C</span></td><td>Dart بتدوّر جوه Object مش String.</td></tr><tr><td><span class="red-text">Q4</span></td><td><span class="highlight">B</span></td><td>نتيجة ?. دايمًا Nullable.</td></tr><tr><td><span class="red-text">Q5</span></td><td><span class="highlight">C</span></td><td>tryParse بترجّع null بدل Exception.</td></tr><tr><td><span class="red-text">Q6</span></td><td><span class="highlight">B</span></td><td>Named: الترتيب حر.</td></tr></table><div class="hafez-box"><p><strong>الخلاصة:</strong> <code>var</code> يثبّت النوع · <code>final</code> Run Time · <code>?.</code> آمن · <code>!</code> خطر · <code>tryParse</code> أحسن من <code>parse</code> · Named + required = Flutter · Extensions بتختصر الكود.</p></div><div class="page-num">— 45 —</div></div></div>
+<script>
+(function(){
+var KW='abstract|as|assert|async|await|break|case|catch|class|const|continue|default|do|else|enum|extends|extension|external|factory|false|final|finally|for|get|if|implements|import|in|interface|is|late|library|mixin|new|null|on|operator|part|required|rethrow|return|set|static|super|switch|this|throw|true|try|typedef|var|void|while|with|yield';
+var TY='int|double|num|String|bool|List|Set|Map|dynamic|Object|Runes|Symbol|Null|Future|Stream|Iterable|Function|Never|Type';
+var re=new RegExp('(\\/\\/[^\\n]*|\\/\\*[\\s\\S]*?\\*\\/)|(\'\'\'[\\s\\S]*?\'\'\'|"""[\\s\\S]*?"""|\'(?:\\\\.|[^\'\\\\\\n])*\'|"(?:\\\\.|[^"\\\\\\n])*")|\\b(\\d+(?:\\.\\d+)?)\\b|\\b('+KW+')\\b|\\b('+TY+')\\b','g');
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+document.querySelectorAll('pre.code').forEach(function(el){
+  var t=el.textContent;
+  el.innerHTML=esc(t).replace(re,function(m,c,s,n,k,ty){
+    if(c&&/[\u0600-\u06FF]/.test(m)){
+      var b=m;
+      if(m.indexOf('/*')===0){b='<bdi dir="ltr">/*</bdi>'+m.slice(2,-2)+'<bdi dir="ltr">*/</bdi>';}
+      return '<span class="c rtl">'+b+'</span>';
+    }
+    if(s&&/[\u0600-\u06FF]/.test(m)){return '<span class="s" style="unicode-bidi:isolate">'+m+'</span>';}
+    var cls=c?'c':s?'s':n?'n':k?'k':'t';
+    return '<span class="'+cls+'">'+m+'</span>';
+  });
+});
+})();
+</script>
+</body>
+</html>
